@@ -1,0 +1,39 @@
+% Knowledge base
+response(greeting, ['Hello!', 'Hi there!', 'Hey!', 'Greetings!']).
+response(introduction, ['I am a chatbot.', 'My name is ChatPro.', 'I am here to assist you.']).
+response(thanks, ['You\'re welcome!', 'No problem.', 'Glad to help!']).
+response(goodbye, ['Goodbye!', 'Farewell!', 'See you later!', 'Bye!']).
+response(unknown, ['I don\'t understand.', 'Could you please rephrase?', 'Sorry, I am not sure.']).
+
+% Rules
+respond(Input, Output) :-
+    response(Input, Responses),
+    random_member(Output, Responses).
+
+% Main interaction loop
+chat :-
+    write('You: '),
+    read_line_to_string(user_input, Input),
+    process_input(Input).
+
+% Process user input
+process_input(Input) :-
+    (   Input = 'exit' -> respond(goodbye, Response), writeln(Response)
+    ;   respond(greeting, Response), writeln(Response),
+        respond(introduction, Intro), writeln(Intro),
+        chat_loop
+    ).
+
+chat_loop :-
+    write('You: '),
+    read_line_to_string(user_input, Input),
+    process_input_loop(Input).
+
+process_input_loop(Input) :-
+    (   Input = 'exit' -> respond(goodbye, Response), writeln(Response)
+    ;   respond(Input, Response), writeln(Response),
+        chat_loop
+    ).
+
+% Entry point
+:- initialization(chat).

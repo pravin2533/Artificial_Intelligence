@@ -1,0 +1,73 @@
+% Define symptoms
+symptom(fever).
+symptom(cough).
+symptom(headache).
+symptom(sore_throat).
+symptom(fatigue).
+symptom(body_aches).
+
+% Define possible medical conditions
+condition(cold).
+condition(flu).
+condition(strep_throat).
+condition(allergies).
+condition(chronic_fatigue_syndrome).
+
+% Define rules for diagnosing conditions based on symptoms
+diagnose(cold) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(headache),
+    symptom(fatigue),
+    not(symptom(sore_throat)).
+
+diagnose(flu) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(sore_throat),
+    symptom(body_aches).
+
+diagnose(strep_throat) :-
+    symptom(fever),
+    symptom(sore_throat),
+    not(symptom(cough)).
+
+diagnose(allergies) :-
+    symptom(cough),
+    symptom(sore_throat),
+    symptom(fatigue),
+    symptom(body_aches),
+    not(symptom(fever)).
+
+diagnose(chronic_fatigue_syndrome) :-
+    symptom(fatigue),
+    symptom(body_aches),
+    not(symptom(fever)),
+    not(symptom(cough)),
+    not(symptom(sore_throat)).
+
+% Define treatments for each condition
+treatment(cold, 'Rest and drink fluids. Over-the-counter medication may help with symptoms.').
+treatment(flu, 'Rest, drink fluids, and take over-the-counter medication for fever and body aches.').
+treatment(strep_throat, 'Antibiotics prescribed by a doctor. Rest and drink fluids.').
+treatment(allergies, 'Avoid allergens, take over-the-counter antihistamines, and use nasal sprays.').
+treatment(chronic_fatigue_syndrome, 'Management strategies including lifestyle changes, therapy, and medication as prescribed by a doctor.').
+
+% Define predicates to consult the expert system
+consult_expert_system :-
+    write('What symptoms are you experiencing? (Separate symptoms with a period and press Enter): '), nl,
+    read_symptoms(Symptoms),
+    diagnose_condition(Symptoms, Condition),
+    write('Based on the symptoms provided, you may have '), write(Condition), nl,
+    write('Treatment: '), treatment(Condition, Treatment), write(Treatment), nl.
+
+read_symptoms([Symptom|Rest]) :-
+    write('Symptom: '), read(Symptom),
+    (Symptom == end_of_file ->
+        Rest = []
+    ;   read_symptoms(Rest)
+    ).
+
+diagnose_condition(Symptoms, Condition) :-
+    diagnose(Condition),
+    \+ (member(Symptom, Symptoms), \+ symptom(Symptom), \+ diagnose_condition(Symptom, Condition)).
